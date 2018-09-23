@@ -10,5 +10,5 @@
 ## run the server in any of the following ways:
 - `npm start`  Run the server with cors headers, the file users.json and no auto-fail
 - `npm run autofail`  Run the server with cors headers, the file users.json. Will randomly generate server faults (status:500)
-- `npm run autofailnocors`  Run the server WITHOUth cors headers, the file users.json. Will randomly generate server faults (status:500)
-- `npm start`  Run the server WITHOUT cors headers, the file users.json and with no auto-fail
+- `npm run autofailnocors`  Run the server WITHOUT cors headers, the file users.json. Will randomly generate server faults (status:500)
+- `npm run nocors`  Run the server WITHOUT cors headers, the file users.json and with no auto-fail
