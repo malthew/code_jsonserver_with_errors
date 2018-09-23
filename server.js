@@ -9,7 +9,7 @@ server.use(bodyParser.json()); // for parsing application/json
 server.set("view engine", "ejs")
 
 const rules = require("./users_rules").users;
-server.get("/", (req, res, next) => res.render(path.join(__dirname , "index.ejs"), { rules }));
+server.get("/", (req, res, next) => res.render(path.join(__dirname, "index.ejs"), { rules }));
 
 let args = process.argv.slice(2);
 
@@ -26,13 +26,12 @@ const opts = args.reduce((acc, curVal) => {
 }, {})
 
 let = cors = opts.cors;
-cors = typeof cors ==="undefined" ? true : cors;
+cors = typeof cors === "undefined" ? true : cors;
 
 
-if (cors===true) {
+if (cors === true) {
   server.use(middlewares)
-} else 
-{
+} else {
   const noCors = middlewares.filter(f => f.name != "corsMiddleware")
   server.use(noCors)
 }
@@ -45,7 +44,10 @@ var fs = require('fs');
 var path = require('path');
 if (!fs.existsSync(path.join(__dirname, DB))) {
   console.log(chalk.bold("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
-  console.log(chalk.red(`File ${DB} was not found, must be present in the root of this project`));
+  console.log(chalk.red(`File ${DB} was not found, must be present in the ROOT of this project`));
+  if (DB === "users.json") {
+    console.log(chalk.gray("You can find a copy here: https://github.com/Cphdat3sem2018f/week6_javascript-2/blob/master/code/users.json"))
+  }
   console.log(chalk.bold("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"));
   process.exit(0);
 }
@@ -131,7 +133,7 @@ server.listen(PORT, () => {
   console.log('');
   console.log("Database file " + chalk.blue(DB) + " is loaded")
   console.log(`Modified JSON Server is running on port ${PORT}`)
-  console.log(chalk("CORS: ")+cors);
+  console.log(chalk("CORS: ") + cors);
   console.log();
   if (REQUESTS_BETWEEN_FAILS >= 0) {
     console.log(chalk.red("This mode will produce random http-500 errors"))
