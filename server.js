@@ -4,14 +4,8 @@ const middlewares = jsonServer.defaults()
 const validator = require("email-validator");
 const chalk = require('chalk');
 
-var bodyParser = require('body-parser');
-server.use(bodyParser.json()); // for parsing application/json
-server.set("view engine", "ejs")
-
-const rules = require("./users_rules").users;
-server.get("/", (req, res, next) => res.render(path.join(__dirname, "index.ejs"), { rules }));
-
 let args = process.argv.slice(2);
+const PORT = 3333
 
 /*
 Legal options:
@@ -25,9 +19,23 @@ const opts = args.reduce((acc, curVal) => {
   return acc;
 }, {})
 
+const DB = opts.db || "users.json";
+let ROUTE = DB.split(".")[0];
+ROUTE = "route" ? "/api/users" : ROUTE
+
+console.log(DB);
+
+var bodyParser = require('body-parser');
+server.use(bodyParser.json()); // for parsing application/json
+server.set("view engine", "ejs")
+
+const rules = require("./users_rules").users;
+server.get("/", (req, res, next) => res.render(path.join(__dirname, "index.ejs"), 
+{ rules,url:"http://localhost:"+PORT+ROUTE, resourse: ROUTE }));
+
+
 let = cors = opts.cors;
 cors = typeof cors === "undefined" ? true : cors;
-
 
 if (cors === true) {
   server.use(middlewares)
@@ -36,9 +44,7 @@ if (cors === true) {
   server.use(noCors)
 }
 
-const DB = opts.db || "users.json";
-const ROUTE = DB.split(".")[0];
-console.log(DB);
+
 
 var fs = require('fs');
 var path = require('path');
@@ -52,8 +58,23 @@ if (!fs.existsSync(path.join(__dirname, DB))) {
   process.exit(0);
 }
 
-const router = jsonServer.router(DB);
+//Handle that URL starts with /api/
+server.use((req,res,next)=>{
+  console.log("URL: "+req.url);
+  if(req.url.startsWith("/users")){
+    console.log("404")
+    return res.status(400).json({
+      status: res.statusCode,
+      msg: "No content found for this request"
+    })
+  }
+  if(req.url.startsWith("/api/users")){
+      req.url = req.url.substring(4,req.url.length);
+  }
+  next();
+})
 
+const router = jsonServer.router(DB);
 
 
 const REQUESTS_BETWEEN_FAILS = isNaN(opts.fail) ? -1 : val;
@@ -78,7 +99,7 @@ server.use((req, res, next) => {
 //Check incomming request before adding to the "database"
 server.use((req, res, next) => {
 
-  if ((req.method === "POST" || req.method === "PUT") && req.url === "/users") {
+  if ((req.method === "POST" || req.method === "PUT") && req.url.startsWith("/users")) {
     const body = req.body;
     if (!body || JSON.stringify(body) === "{}") {
       return res.json({ status: 400, msg: "No content included with this request" })
@@ -91,7 +112,7 @@ server.use((req, res, next) => {
     if (body.name.length < 3) {
       msg.push("Name must include at least 2 characters");
     }
-    if (!(!body.gender === "male" || body.gender === "female")) {
+    if (!(body.gender === "male" || body.gender === "female")) {
       msg.push("Gender must contain 'male' or 'female' ");
     }
     if (!validator.validate(body.email)) {
@@ -127,7 +148,7 @@ router.render = function (req, res) {
     res.json(res.locals.data)
   }
 }
-const PORT = 3000;
+
 server.listen(PORT, () => {
   console.log(chalk.cyan('  \\{^_^}/ hi!'))
   console.log('');
@@ -140,7 +161,7 @@ server.listen(PORT, () => {
     console.log()
   }
   console.log(chalk.bold("Resources"))
-  console.log(`http://localhost:${PORT}/${ROUTE}`);
+  console.log(`http://localhost:${PORT}${ROUTE}`);
   console.log()
   console.log(chalk.bold("Home"));
   console.log(`http://localhost:${PORT}`);
