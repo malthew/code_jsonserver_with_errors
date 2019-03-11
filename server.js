@@ -19,11 +19,12 @@ const opts = args.reduce((acc, curVal) => {
   return acc;
 }, {})
 
+
 const DB = opts.db || "users.json";
 let ROUTE = DB.split(".")[0];
 ROUTE = "route" ? "/api/users" : ROUTE
 
-console.log(DB);
+console.log(`DB: ${DB}, ROUTE: ${ROUTE}`)
 
 var bodyParser = require('body-parser');
 server.use(bodyParser.json()); // for parsing application/json
@@ -77,8 +78,8 @@ server.use((req,res,next)=>{
 const router = jsonServer.router(DB);
 
 
-const REQUESTS_BETWEEN_FAILS = isNaN(opts.fail) ? -1 : val;
-
+const REQUESTS_BETWEEN_FAILS = isNaN(opts.fail) ? -1 : Number(opts.fail);
+console.log("REQUESTS_BETWEEN_FAILS",REQUESTS_BETWEEN_FAILS)
 
 //Simulate a server fault
 server.use((req, res, next) => {
