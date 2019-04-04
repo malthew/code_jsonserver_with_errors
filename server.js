@@ -19,7 +19,6 @@ const opts = args.reduce((acc, curVal) => {
   return acc;
 }, {})
 
-
 const DB = opts.db || "users.json";
 let ROUTE = DB.split(".")[0];
 ROUTE = "route" ? "/api/users" : ROUTE
@@ -37,15 +36,14 @@ server.get("/", (req, res, next) => res.render(path.join(__dirname, "index.ejs")
 
 let = cors = opts.cors;
 cors = typeof cors === "undefined" ? true : cors;
+console.log("CORS Headers: ",cors)
 
-if (cors === true) {
+if (cors) {
   server.use(middlewares)
 } else {
   const noCors = middlewares.filter(f => f.name != "corsMiddleware")
   server.use(noCors)
 }
-
-
 
 var fs = require('fs');
 var path = require('path');
@@ -59,7 +57,7 @@ if (!fs.existsSync(path.join(__dirname, DB))) {
   process.exit(0);
 }
 
-//Handle that URL starts with /api/
+//Handle URL that starts with /api/
 server.use((req,res,next)=>{
   console.log("URL: "+req.url);
   if(req.url.startsWith("/users")){
