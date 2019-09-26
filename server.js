@@ -36,12 +36,15 @@ server.get("/", (req, res, next) => res.render(path.join(__dirname, "index.ejs")
 
 let = cors = opts.cors;
 cors = typeof cors === "undefined" ? true : cors;
-console.log("CORS Headers: ",cors)
 
-if (cors) {
+if (cors===true) {
   server.use(middlewares)
 } else {
-  const noCors = middlewares.filter(f => f.name != "corsMiddleware")
+  const noCors = middlewares.filter(f => 
+  { 
+    return f.name != "corsMiddleware"
+  })
+  console.log("CORS HEADERS DISABLED")
   server.use(noCors)
 }
 
